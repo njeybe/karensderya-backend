@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 
-export const adminSchema = new mongoose.Schema(
+const adminSchema = new mongoose.Schema(
   {
     username: {
       type: String,
@@ -17,7 +17,7 @@ export const adminSchema = new mongoose.Schema(
     // Sa user ay naka default ang User page automatic di magkakaroon access ang user sa admin
     role: {
       type: String,
-      enum: ["user, admin"],
+      enum: ["user", "admin"],
       default: "user",
     },
   },
@@ -35,3 +35,10 @@ adminSchema.pre("save", async function (next) {
 });
 
 // need ng authentication like kailangan match ang password
+adminSchema.method.matchPassword = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
+};
+
+const Admin = mongoose.model("Admin", adminSchema);
+
+export default Admin;
