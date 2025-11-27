@@ -35,7 +35,7 @@ adminSchema.pre("save", async function (next) {
 });
 
 // need ng authentication like kailangan match ang password
-adminSchema.method.matchPassword = async function (enteredPassword) {
+adminSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
