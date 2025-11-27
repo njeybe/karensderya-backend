@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import { connectDB } from "./config/db.js";
 import adminRoutes from "./routes/adminRoutes.js";
-
+import menuRoutes from "./routes/menuRoutes.js";
 const app = express();
 
 connectDB();
@@ -15,7 +15,8 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/api/auth", adminRoutes);
+app.use("/api", adminRoutes);
+app.use("/api", menuRoutes);
 
 app.get("/", (req, res) => {
   console.log("Browser route successful.");
