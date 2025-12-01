@@ -1,8 +1,9 @@
+// app.js INITIALIZATION OF EXPRESS
 import express from "express";
 import cors from "cors";
 import { connectDB } from "./config/db.js";
-import adminRoutes from "./routes/adminRoutes.js";
-import menuRoutes from "./routes/menuRoutes.js";
+import adminController from "./controller/adminController.js";
+import menuController from "./controller/menuController.js";
 
 const app = express();
 
@@ -16,8 +17,8 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/api/auth", adminRoutes);
-app.use("/api/menu", menuRoutes);
+app.use("/api/auth", adminController);
+app.use("/api/menu", menuController);
 
 app.get("/", (req, res) => {
   console.log("Browser route successful.");
