@@ -1,12 +1,12 @@
 import express from "express";
 import Menu from "../models/Menu.js";
 import upload from "../utils/multerConfig.js";
+import { protect } from "../middleware/authMiddleware.js"; // 👈 IMPORT THE BOUNCER
 
 const router = express.Router();
 
-// Nai combine ko na yung routes and controller
-
-// Get/Read a Menu
+// --- PUBLIC ROUTE (No Bouncer) ---
+// Customers need to see the menu without logging in
 router.get("/", async (req, res) => {
   try {
     const menus = await Menu.find({ isArchived: false }).sort({
@@ -17,9 +17,10 @@ router.get("/", async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+// --- PROTECTED ROUTES (Bouncer Active) ---
 
-// Creating a Menu
-router.post("/", upload.single("image"), async (req, res) => {
+// 1. CREATE (Only Admin)
+router.post("/", protect, upload.single("image"), async (req, res) => {
   try {
     console.log("Data received from Postman", req.body); // para sa postman lang to
     const { name, price } = req.body;
@@ -44,8 +45,8 @@ router.post("/", upload.single("image"), async (req, res) => {
   }
 });
 
-// For updating Menu
-router.put("/:id", upload.single("image"), async (req, res) => {
+// 2. UPDATE (Only Admin)
+router.put("/:id", protect, upload.single("image"), async (req, res) => {
   try {
     console.log("Data received from Postman", req.body); // para sa postman lang to
     const { name, price } = req.body;
@@ -73,8 +74,8 @@ router.put("/:id", upload.single("image"), async (req, res) => {
   }
 });
 
-// Archive(delete) a Menu
-router.put("/archive/:id", async (req, res) => {
+// 3. ARCHIVE (Only Admin)
+router.put("/archive/:id", protect, async (req, res) => {
   try {
     const menuId = req.params.id;
 
@@ -96,8 +97,18 @@ router.put("/archive/:id", async (req, res) => {
   }
 });
 
-// Get the archives
-router.get("/archived", async (req, res) => {
+// 4. RESTORE (Only Admin)
+router.put("/restore/:id", protect, async (req, res) => {
+  try {
+    await Menu.findByIdAndUpdate(req.params.id, { isArchived: false });
+    res.status(200).json({ message: "Menu restored successfully" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// 5. GET ARCHIVED (Only Admin should see hidden items)
+router.get("/archived", protect, async (req, res) => {
   try {
     const hiddenMenus = await Menu.find({ isArchived: true }).sort({
       updatedAt: -1,
@@ -107,16 +118,5 @@ router.get("/archived", async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
-
-// Restore archived(deleted) menu
-router.put("/restore/:id", async (req, res) => {
-  try {
-    await Menu.findByIdAndUpdate(req.params.id, { isArchived: false });
-    res.status(200).json({ message: "Menu restored successfully" });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-
 
 export default router;
