@@ -4,6 +4,7 @@ import cors from "cors";
 import { connectDB } from "./config/db.js";
 import adminController from "./controller/adminController.js";
 import menuController from "./controller/menuController.js";
+import orderController from "./controller/orderController.js";
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.use((req, res, next) => {
 
 app.use("/api/auth", adminController);
 app.use("/api/menu", menuController);
+app.use("/api/orders", orderController);
 
 app.get("/", (req, res) => {
   console.log("Browser route successful.");
