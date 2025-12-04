@@ -6,17 +6,30 @@ const router = express.Router();
 // create new order
 router.post("/", async (req, res) => {
   try {
-    const { items, totalAmount } = req.body;
+    const {
+      items,
+      totalAmount,
+      customerName,
+      contactNumber,
+      orderType,
+      tableNumber,
+      address,
+    } = req.body;
 
     const newOrder = new Order({
-      // customerName,
-      items, 
+      items,
       totalAmount,
+      customerName,
+      contactNumber,
+      orderType,
+      tableNumber,
+      address,
     });
 
     const savedOrder = await newOrder.save();
     res.status(201).json(savedOrder);
   } catch (err) {
+    console.error("Error creating order:", err);
     res.status(400).json({ message: err.message });
   }
 });
@@ -42,6 +55,19 @@ router.put("/:id", async (req, res) => {
     );
 
     res.status(201).json(updatedOrder);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.get("/:id", async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+    if (order) {
+      res.status(200).json(order);
+    } else {
+      res.status(404).json({ message: "Order not found" });
+    }
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
