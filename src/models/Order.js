@@ -6,6 +6,17 @@ const orderSchema = new mongoose.Schema(
     //   type: String,
     //   default: "Walk-in Customer",
     // },
+
+    customerName: { type: String, required: true },
+    contactNumber: { type: String }, // Optional
+    orderType: {
+      type: String,
+      enum: ["Dine-in", "Takeout", "Delivery"],
+      default: "Dine-in",
+    },
+    tableNumber: { type: String }, // For Dine-in
+    address: { type: String },
+
     items: [
       {
         menuId: {
@@ -17,7 +28,7 @@ const orderSchema = new mongoose.Schema(
           required: true,
         },
         price: {
-          type: String,
+          type: Number,
           required: true,
         },
         qty: {
