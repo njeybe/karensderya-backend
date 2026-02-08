@@ -26,6 +26,7 @@ const adminSchema = new mongoose.Schema(
   }
 );
 
+// Encrypt password before saving
 adminSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
     next();
@@ -34,11 +35,11 @@ adminSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, salt);
 });
 
-// need ng authentication like kailangan match ang password
+// Method to compare entered password with hashed password in database
 adminSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-const Admin = mongoose.model("Admin", adminSchema); // Same sa Menu it will create a collection called "admins"
+const Admin = mongoose.model("Admin", adminSchema); // gagawa ng isang collection called "admins"
 
 export default Admin;
